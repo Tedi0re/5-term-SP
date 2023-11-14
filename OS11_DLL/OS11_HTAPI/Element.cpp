@@ -1,4 +1,7 @@
 #include "pch.h"
+#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_NON_CONFORMING_WCSTOK
+
 
 namespace ht
 {
@@ -36,6 +39,6 @@ namespace ht
 
 	int getSizeElement(int   maxKeyLength, int   maxPayloadLength)
 	{
-		return maxKeyLength + maxPayloadLength + sizeof(int) * 2;//??
+		return maxKeyLength + maxPayloadLength + sizeof(int) * 2;
 	}
 }

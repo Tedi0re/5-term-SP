@@ -1,4 +1,7 @@
 #include "pch.h"
+#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_NON_CONFORMING_WCSTOK
+
 
 namespace ht
 {
@@ -101,6 +104,7 @@ namespace ht
 	(
 		const wchar_t* fileName)         // имя файла
 	{
+		//HANDLE hMutex = NULL;
 		HtHandle* htHandle = openHtFromFile(fileName);
 		if (htHandle == NULL)
 		{
@@ -109,9 +113,54 @@ namespace ht
 				return NULL;
 		}
 
+		//hMutex = CreateMutex(NULL, 0, (LPCWSTR)fileName);
+		//if (!hMutex || hMutex == INVALID_HANDLE_VALUE)
+		//{
+		//	throw "create mutex error";
+		//}
+		//htHandle->mutex = hMutex;
+
+
 		runSnapshotTimer(htHandle);
 
 		return htHandle;
+	}
+
+	HtHandle* openExist(const wchar_t* fileName)
+	{
+		HANDLE fileHandle = NULL;
+		HANDLE fileMappingHandle = NULL;
+		HANDLE hm = NULL;
+		LPVOID lp = NULL;
+		HANDLE mutexHandle = NULL;
+
+		fileHandle = CreateFile(fileName, GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+			NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
+		if (fileHandle == NULL || fileHandle == INVALID_HANDLE_VALUE)
+		{
+			throw("file ):");
+		}
+
+		HANDLE mutex = CreateMutex(NULL, FALSE, fileName);
+
+		hm = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, fileName);
+		if (!hm)
+		{
+			throw("Open ):");
+		}
+
+		lp = MapViewOfFile(hm, FILE_MAP_ALL_ACCESS | FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
+
+		if (!lp)
+		{
+			throw("Map ):");
+		}
+
+		HtHandle* ht = (HtHandle*)lp;
+		ht->fileMapping = hm;
+		ht->addr = lp;
+		ht->mutex = mutex;
+		return ht;
 	}
 
 	HtHandle* openHtFromFile(
@@ -120,10 +169,10 @@ namespace ht
 		HANDLE hf = CreateFile(
 			fileName,
 			GENERIC_WRITE | GENERIC_READ,
-			NULL,
+			NULL,//FILE_SHARE_WRITE | FILE_SHARE_READ | FILE_SHARE_DELETE,
 			NULL,
 			OPEN_ALWAYS,
-			FILE_ATTRIBUTE_NORMAL,
+			FILE_FLAG_OVERLAPPED,
 			NULL);
 		if (hf == INVALID_HANDLE_VALUE)
 			return NULL;
@@ -217,7 +266,7 @@ namespace ht
 		return true;
 	}
 
-	Element* get     //  читать элемент из хранилища
+	 Element* get     //  читать элемент из хранилища
 	(
 		HtHandle* htHandle,            // управление HT
 		const Element* element)              // элемент 
@@ -279,7 +328,7 @@ namespace ht
 		return true;
 	}
 
-	BOOL remove      // удалить элемент в хранилище
+	BOOL removeE      // удалить элемент в хранилище
 	(
 		HtHandle* htHandle,            // управление HT (ключ)
 		const Element* element)				 // элемент 

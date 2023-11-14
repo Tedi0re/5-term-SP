@@ -1,4 +1,5 @@
-﻿#include "pch.h"
+#pragma comment(lib, "D:/OS10_HTAPI")
+#include "../OS10_HTAPI/pch.h"
 
 using namespace std;
 
@@ -7,17 +8,17 @@ int main()
 	ht::HtHandle* ht = nullptr;
 	try
 	{
-		ht = ht::create(1000, 3, 10, 256, L"D:/HTspace.ht");
-		if (ht)
-			cout << "-- create: success" << endl;
-		else
-			throw "-- create: error";
+		/*	ht = ht::create(1000, 3, 10, 256, L"D:/HTspace.ht");
+			if (ht)
+				cout << "-- create: success" << endl;
+			else
+				throw "-- create: error";*/
 
-		//ht = ht::open(L"D:/HTspace.ht");
-		//if (ht)
-		//	cout << "-- open: success" << endl;
-		//else
-		//	throw "-- open: error";
+		ht = ht::open(L"D:/HTspace.ht");
+		if (ht)
+			cout << "-- open: success" << endl;
+		else
+			throw "-- open: error";
 
 		//----------------------------------------------------------
 

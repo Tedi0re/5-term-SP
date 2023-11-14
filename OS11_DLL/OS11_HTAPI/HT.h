@@ -3,7 +3,16 @@
 
 #define SECOND 10000000
 
-namespace ht    // HT API
+#define _CRT_SECURE_NO_WARNINGS
+
+//#ifdef OS11HTAPI_EXPORTS
+//#define OS11HTAPI __declspec(dllexport)
+//#else
+//#define OS11HTAPI __declspec(dllimport)
+//#endif
+
+#define OS11HTAPI __declspec(dllexport)
+extern "C" namespace ht    // HT API
 {
 	// API HT - программный интерфейс для доступа к НТ-хранилищу 
 	//          НТ-хранилище предназначено для хранения данных в ОП в формате ключ/значение
@@ -19,7 +28,7 @@ namespace ht    // HT API
 	//          getLastError - получить сообщение о последней ошибке
 
 
-	struct HtHandle    // блок управления HT
+	extern "C" OS11HTAPI struct  HtHandle    // блок управления HT
 	{
 		HtHandle();
 		HtHandle(int capacity, int secSnapshotInterval, int maxKeyLength, int maxPayloadLength, const wchar_t* fileName);
@@ -37,9 +46,11 @@ namespace ht    // HT API
 		int count;						// текущее количество элементов в хэш-таблице
 		HANDLE snapshotTimer;			// таймер для snapshot
 		HANDLE mutex;					// mutex для синхронизации нескольких экземпляров HtHandle
+		//int elementCount;
+		//HANDLE snapShotTheard;
 	};
 
-	HtHandle* create   //  создать HT             
+	extern "C" OS11HTAPI HtHandle* create   //  создать HT             
 	(
 		int	  capacity,					   // емкость хранилища
 		int   secSnapshotInterval,		   // переодичность сохранения в сек.
@@ -48,43 +59,45 @@ namespace ht    // HT API
 		const wchar_t* fileName           // имя файла 
 	); 	// != NULL успешное завершение  
 
-	HtHandle* open     //  открыть HT             
+	extern "C" OS11HTAPI HtHandle* open     //  открыть HT             
 	(
 		const wchar_t* fileName         // имя файла 
 	); 	// != NULL успешное завершение  
 
-	BOOL snap         // выполнить Snapshot
+	extern "C" OS11HTAPI HtHandle * openExist(const wchar_t* fileName);
+
+	extern "C" OS11HTAPI BOOL snap         // выполнить Snapshot
 	(
 		HtHandle* htHandle           // управление HT (File, FileMapping)
 	);
 
-	BOOL close        // snap и закрыть HT  и  очистить htHandle
+	extern "C" OS11HTAPI BOOL close        // snap и закрыть HT  и  очистить htHandle
 	(
 		const HtHandle* htHandle           // управление HT (File, FileMapping)
 	);	//  == TRUE успешное завершение   
 
 
-	BOOL insert      // добавить элемент в хранилище
+	extern "C" OS11HTAPI BOOL insert      // добавить элемент в хранилище
 	(
 		HtHandle* htHandle,            // управление HT
 		const Element* element              // элемент
 	);	//  == TRUE успешное завершение 
 
 
-	BOOL remove      // удалить элемент в хранилище
+	extern "C" OS11HTAPI BOOL removeE   // удалить элемент в хранилище
 	(
 		HtHandle* htHandle,            // управление HT (ключ)
 		const Element* element              // элемент 
 	);	//  == TRUE успешное завершение 
 
-	Element* get     //  читать элемент в хранилище
+	extern "C" OS11HTAPI Element* get     //  читать элемент в хранилище
 	(
 		HtHandle* htHandle,            // управление HT
 		const Element* element              // элемент 
 	); 	//  != NULL успешное завершение 
 
 
-	BOOL update     //  именить элемент в хранилище
+	extern "C" OS11HTAPI BOOL update     //  именить элемент в хранилище
 	(
 		HtHandle* htHandle,            // управление HT
 		const Element* oldElement,          // старый элемент (ключ, размер ключа)
@@ -92,12 +105,12 @@ namespace ht    // HT API
 		int             newPayloadLength     // размер новых данных
 	); 	//  != NULL успешное завершение 
 
-	const char* getLastError  // получить сообщение о последней ошибке
+	extern "C" OS11HTAPI const char* getLastError  // получить сообщение о последней ошибке
 	(
 		const HtHandle* htHandle                         // управление HT
 	);
 
-	void print                               // распечатать элемент 
+	extern "C" OS11HTAPI void print                               // распечатать элемент 
 	(
 		const Element* element              // элемент 
 	);
@@ -113,7 +126,7 @@ namespace ht    // HT API
 	Element* readFromMemory(const HtHandle* const htHandle, Element* const element, int index);
 	BOOL clearMemoryByIndex(const HtHandle* const htHandle, int index);
 	int decrementCount(HtHandle* const htHandle);
-
+	
 	void CALLBACK snapAsync(LPVOID prm, DWORD, DWORD);
 	const char* writeLastError(HtHandle* const htHandle, const char* msg);
 

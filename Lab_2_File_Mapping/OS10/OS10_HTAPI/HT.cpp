@@ -1,5 +1,7 @@
 #include "pch.h"
 
+
+
 namespace ht
 {
 	HtHandle::HtHandle()
