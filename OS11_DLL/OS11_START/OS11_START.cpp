@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
 	argv[1] = (char*)"d:/HTspaceSP03.ht";
 	try
 	{
-		HMODULE libModule = LoadLibrary(L"d:/OS11_HTAPI.dll");
+		HMODULE libModule = LoadLibrary(L"OS11_HTAPI");
 		if (!libModule)
 		{
 			throw "Невозможно загрузить библиотеку";

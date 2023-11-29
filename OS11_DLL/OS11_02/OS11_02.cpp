@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 		wchar_t* wc = new wchar_t[cSize];
 		mbstowcs(wc, argv[1], cSize);
 
-		ht::HtHandle* HT = ht::open(wc);
+		ht::HtHandle* HT = ht::openExist(wc);
 		if (HT == NULL)
 		{
 			throw "Хранилище не создано";

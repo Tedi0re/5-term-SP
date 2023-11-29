@@ -112,7 +112,6 @@ namespace ht
 			if (htHandle == NULL)
 				return NULL;
 		}
-
 		//hMutex = CreateMutex(NULL, 0, (LPCWSTR)fileName);
 		//if (!hMutex || hMutex == INVALID_HANDLE_VALUE)
 		//{
@@ -128,39 +127,10 @@ namespace ht
 
 	HtHandle* openExist(const wchar_t* fileName)
 	{
-		HANDLE fileHandle = NULL;
-		HANDLE fileMappingHandle = NULL;
-		HANDLE hm = NULL;
-		LPVOID lp = NULL;
-		HANDLE mutexHandle = NULL;
-
-		fileHandle = CreateFile(fileName, GENERIC_WRITE | GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-			NULL, OPEN_EXISTING, FILE_FLAG_OVERLAPPED, NULL);
-		if (fileHandle == NULL || fileHandle == INVALID_HANDLE_VALUE)
-		{
-			throw("file ):");
-		}
-
-		HANDLE mutex = CreateMutex(NULL, FALSE, fileName);
-
-		hm = OpenFileMapping(FILE_MAP_ALL_ACCESS, FALSE, fileName);
-		if (!hm)
-		{
-			throw("Open ):");
-		}
-
-		lp = MapViewOfFile(hm, FILE_MAP_ALL_ACCESS | FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, 0);
-
-		if (!lp)
-		{
-			throw("Map ):");
-		}
-
-		HtHandle* ht = (HtHandle*)lp;
-		ht->fileMapping = hm;
-		ht->addr = lp;
-		ht->mutex = mutex;
-		return ht;
+		HtHandle* htHandle = openHtFromMapName(fileName);
+		if (htHandle == NULL)
+			return NULL;
+		return htHandle;
 	}
 
 	HtHandle* openHtFromFile(
